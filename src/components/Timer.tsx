@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PlayIcon, PauseIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
-import { showWorkCompleteNotification, showBreakCompleteNotification } from '../utils/notifications';
+import { showWorkCompleteNotification, showBreakCompleteNotification, initAudio } from '../utils/notifications';
 import { TimerMode } from '../timerTypes';
 
 interface TimerProps {
@@ -50,6 +50,9 @@ const Timer: React.FC<TimerProps> = ({
 
   // Custom mode change handler
   const handleModeChange = (newMode: TimerMode) => {
+    // Initialize audio on user interaction
+    initAudio();
+    
     setMode(newMode);
     // If onModeChange is provided, use it to maintain sequence in parent component
     if (onModeChange) {
@@ -131,6 +134,9 @@ const Timer: React.FC<TimerProps> = ({
   };
   
   const toggleTimer = () => {
+    // Initialize audio on user interaction
+    initAudio();
+    
     // If we have external control, just call the parent toggle handler
     if (onTimerToggle) {
       onTimerToggle();
@@ -141,6 +147,9 @@ const Timer: React.FC<TimerProps> = ({
   };
   
   const resetTimer = () => {
+    // Initialize audio on user interaction
+    initAudio();
+    
     // Use parent's reset handler if available
     if (onReset) {
       onReset();

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { CogIcon } from '@heroicons/react/24/solid';
 import { loadAppSettings, saveTimerSettings, TimerSettings } from './utils/storage';
-import { requestNotificationPermission } from './utils/notifications';
+import { requestNotificationPermission, initAudio, showWorkCompleteNotification, isAudioInitialized } from './utils/notifications';
 import AnimatedBackground from './components/AnimatedBackground';
 import Timer from './components/Timer';
 import { TimerMode as TimerComponentMode } from './timerTypes';
@@ -43,10 +43,13 @@ function App() {
   const timerRef = useRef<number | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [shouldAutoStart, setShouldAutoStart] = useState<boolean>(false);
+  const [audioInitialized, setAudioInitialized] = useState<boolean>(false);
 
   // Request notification permission when the app loads
   useEffect(() => {
     requestNotificationPermission();
+    // Check if audio is already initialized
+    setAudioInitialized(isAudioInitialized());
   }, []);
 
   // Effect for timer countdown - removed as the Timer component handles this
@@ -142,6 +145,13 @@ function App() {
   const toggleTimer = () => {
     console.log("Toggling timer from App.tsx, current state:", isActive);
     
+    // Initialize audio on user interaction
+    initAudio().then(initialized => {
+      if (initialized) {
+        setAudioInitialized(true);
+      }
+    });
+    
     // Toggle state
     setIsActive(!isActive);
   };
@@ -153,14 +163,17 @@ function App() {
   };
 
   return (
-    <div className="app-container">
+    <div className="app-container" onClick={initAudio}>
       <AnimatedBackground />
       
       <div className="fixed-header">
         <h1 className="app-title">pomotomato</h1>
         <button
           className="settings-button"
-          onClick={() => setShowSettings(true)}
+          onClick={() => {
+            setShowSettings(true);
+            initAudio(); // Initialize audio on settings click
+          }}
         >
           <CogIcon className="h-8 w-8" />
         </button>
@@ -298,6 +311,22 @@ function App() {
                 />
                 <span>Auto-start pomodoros</span>
               </label>
+              
+              <div className="audio-test-section">
+                <p className="audio-test-note">Some browsers block notification sounds until you interact with the page. Click the button below to test and enable notifications:</p>
+                <button 
+                  className={`audio-test-button ${audioInitialized ? 'initialized' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    initAudio().then(() => {
+                      setAudioInitialized(true);
+                      showWorkCompleteNotification();
+                    });
+                  }}
+                >
+                  {audioInitialized ? 'Sound Enabled ✓' : 'Test Notification Sound'}
+                </button>
+              </div>
             </div>
             
             <div className="settings-actions">
