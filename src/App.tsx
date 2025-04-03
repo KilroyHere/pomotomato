@@ -2,7 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { CogIcon } from '@heroicons/react/24/solid';
 import { loadAppSettings, saveTimerSettings, TimerSettings } from './utils/storage';
-import { requestNotificationPermission, initAudio, showWorkCompleteNotification, isAudioInitialized } from './utils/notifications';
+import { 
+  requestNotificationPermission, 
+  initAudio, 
+  showWorkCompleteNotification, 
+  isAudioInitialized, 
+  showBreakCompleteNotification,
+  playNotificationSound 
+} from './utils/notifications';
 import AnimatedBackground from './components/AnimatedBackground';
 import Timer from './components/Timer';
 import { TimerMode as TimerComponentMode } from './timerTypes';
@@ -44,6 +51,7 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [shouldAutoStart, setShouldAutoStart] = useState<boolean>(false);
   const [audioInitialized, setAudioInitialized] = useState<boolean>(false);
+  const [isNotifying, setIsNotifying] = useState<boolean>(false); // Add flag to prevent duplicate notifications
 
   // Request notification permission when the app loads
   useEffect(() => {
@@ -88,12 +96,43 @@ function App() {
     }
   }, [mode, shouldAutoStart]);
 
+  // Effect to update document title based on timer state
+  useEffect(() => {
+    let title = 'Pomotomato';
+    
+    // Add current time to title when timer is active
+    if (isActive) {
+      if (mode === TimerMode.WORK) {
+        title = `🍅 Focus - Pomotomato`;
+      } else if (mode === TimerMode.SHORT_BREAK) {
+        title = `☕ Short Break - Pomotomato`;
+      } else {
+        title = `🌴 Long Break - Pomotomato`;
+      }
+    } else if (completedPomodoros > 0) {
+      // Show completed count when not active
+      title = `${completedPomodoros} 🍅 - Pomotomato`;
+    }
+    
+    document.title = title;
+  }, [isActive, mode, completedPomodoros]);
+
   // Handle timer completion
   const handleTimerComplete = () => {
     console.log("Timer completed handler called in App.tsx");
+    
+    // Prevent multiple notifications firing at the same time
+    if (isNotifying) {
+      console.log("Already showing notification, skipping");
+      return;
+    }
+    
+    setIsNotifying(true);
+    
     // Play notification sound and show browser notification
     if (mode === TimerMode.WORK) {
-      // Notification already handled in Timer component
+      // Show work complete notification
+      showWorkCompleteNotification();
       
       const newCompletedPomodoros = completedPomodoros + 1;
       setCompletedPomodoros(newCompletedPomodoros);
@@ -114,7 +153,9 @@ function App() {
       // Change mode
       setMode(nextMode);
     } else {
-      // Notification already handled in Timer component
+      // Show break complete notification
+      showBreakCompleteNotification();
+      
       console.log("Break completed - setting autoStart to:", timerSettings.autoStartPomodoros);
       
       // Auto-start pomodoro if enabled
@@ -123,6 +164,11 @@ function App() {
       // Change mode
       setMode(TimerMode.WORK);
     }
+    
+    // Reset notification flag after a delay
+    setTimeout(() => {
+      setIsNotifying(false);
+    }, 1000);
   };
 
   // Custom mode change handler to preserve pomodoro sequence
@@ -318,9 +364,12 @@ function App() {
                   className={`audio-test-button ${audioInitialized ? 'initialized' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    initAudio().then(() => {
-                      setAudioInitialized(true);
-                      showWorkCompleteNotification();
+                    initAudio().then(initialized => {
+                      if (initialized) {
+                        setAudioInitialized(true);
+                        // Just play the sound without calling the notification function
+                        playNotificationSound();
+                      }
                     });
                   }}
                 >

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PlayIcon, PauseIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
-import { showWorkCompleteNotification, showBreakCompleteNotification, initAudio } from '../utils/notifications';
+import { initAudio } from '../utils/notifications';
 import { TimerMode } from '../timerTypes';
 
 interface TimerProps {
@@ -91,14 +91,7 @@ const Timer: React.FC<TimerProps> = ({
             // Clear interval right away to prevent further ticks
             clearInterval(interval);
             
-            // Handle timer completion inside this effect
-            if (mode === TimerMode.FOCUS) {
-              showWorkCompleteNotification();
-            } else {
-              showBreakCompleteNotification();
-            }
-            
-            // Notify parent
+            // Notify parent - let parent handle the notifications
             onComplete?.();
             
             // Set to exactly 0
