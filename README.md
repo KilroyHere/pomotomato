@@ -2,7 +2,7 @@
 
 A modern, beautiful Pomodoro timer app with a vibrant animated background and Spotify integration.
 
-![Pomotomato Screenshot](https://i.imgur.com/example.png)
+![Pomotomato Screenshot](public/image.png)
 
 ## Features
 
