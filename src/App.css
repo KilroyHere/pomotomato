@@ -1,0 +1,722 @@
+:root {
+  --primary-color: #7040f2;
+  --primary-hover: #4b2ad8;
+  --secondary-color: #e91e63;
+  --secondary-hover: #c2185b;
+  --text-color: #ffffff;
+  --bg-overlay: rgba(255, 255, 255, 0.12);
+  --card-bg: rgba(0, 0, 0, 0.15);
+  --heading-font: 'Space Grotesk', sans-serif;
+  --body-font: 'Space Grotesk', sans-serif;
+}
+
+body, button, input, select, textarea {
+  font-family: 'Space Grotesk', sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.header {
+  padding: 1.5rem 3rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  backdrop-filter: blur(8px);
+  background-color: transparent;
+  box-shadow: none;
+  position: relative;
+  z-index: 10;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.app-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-shadow: none;
+  transition: all 0.3s ease;
+  text-align: left;
+  /* margin-right: 0.5rem; */
+}
+
+.timer-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  position: relative;
+  z-index: 2;
+  max-height: 85vh;
+  margin-top: 3rem;
+}
+
+.task-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  background: transparent;
+  padding: 0.8rem 2rem;
+  border-radius: 3rem;
+  backdrop-filter: blur(10px);
+  box-shadow: none;
+  transition: all 0.3s ease;
+  border: none;
+  width: auto;
+  max-width: 90vw;
+}
+
+.task-icon {
+  margin-right: 1.2rem;
+  opacity: 0.9;
+  font-size: 1.4rem;
+}
+
+.task-title {
+  font-size: 1.7rem;
+  font-weight: 500;
+  flex: 1;
+  text-align: center;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.task-edit {
+  background: transparent !important;
+  color: white;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.6rem;
+  margin-left: 1rem;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-edit:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.mode-selector {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 10;
+}
+
+.mode-button {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.95);
+  border: none;
+  padding: 0.9rem 2.2rem;
+  border-radius: 2.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.75px;
+  backdrop-filter: none;
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  min-width: 100px;
+}
+
+.mode-button:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.mode-button.active {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+
+.timer-display {
+  font-size: 16rem;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+  letter-spacing: -5px;
+  color: white;
+  text-shadow: none;
+  position: relative;
+  z-index: 5;
+  transition: all 0.3s ease;
+  width: 100%;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .timer-display {
+    font-size: 12rem;
+    letter-spacing: -4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .timer-display {
+    font-size: 8rem;
+    letter-spacing: -3px;
+  }
+}
+
+.timer-controls {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 3.5rem;
+}
+
+.control-button {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.95);
+  border: none;
+  padding: 1.2rem 3rem;
+  border-radius: 3rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.control-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.reset-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reset-button:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px) rotate(10deg);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.fullscreen-button {
+  background: transparent;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.fullscreen-button:hover {
+  opacity: 1;
+  background: var(--bg-overlay);
+  transform: scale(1.1);
+}
+
+.settings-button {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.8);
+  border: none !important;
+  border-radius: 50%;
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  position: relative;
+}
+
+.settings-button svg {
+  width: 2.8rem;
+  height: 2.8rem;
+}
+
+.settings-button:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* Settings modal styles */
+.settings-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border-radius: 2rem;
+  padding: 2.5rem;
+  z-index: 100;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  font-family: var(--body-font);
+  backdrop-filter: blur(20px);
+  animation: modalFadeIn 0.3s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.settings-modal h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.8rem;
+  position: relative;
+  text-align: center;
+}
+
+.settings-modal h2:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.settings-input {
+  width: 100%;
+  padding: 1.2rem;
+  margin: 0.5rem 0 1.8rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(112, 64, 242, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.settings-checkbox {
+  margin-right: 0.75rem;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary-color);
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.2rem;
+  margin-top: 2.5rem;
+}
+
+.cancel-button {
+  background: rgba(0, 0, 0, 0.05);
+  color: #333;
+  border: none;
+  padding: 1rem 2.2rem;
+  border-radius: 1.5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+.cancel-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.save-button {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 1rem 2.2rem;
+  border-radius: 1.5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(112, 64, 242, 0.2);
+}
+
+.save-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(112, 64, 242, 0.3);
+}
+
+/* Spotify controls at the bottom */
+.spotify-container {
+  background: rgba(0, 0, 0, 0.15);
+  margin: 1.8rem;
+  border-radius: 3rem;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  box-shadow: none;
+  transition: all 0.3s ease;
+  transform: translateY(0);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin: 2rem auto;
+  position: relative;
+  z-index: 10;
+}
+
+.spotify-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.progress-dots {
+  display: flex;
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+
+.progress-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+  background: white;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+  transform: scale(1.1);
+}
+
+/* Inspirational quote styling similar to Flocus */
+.inspirational-quote {
+  position: fixed;
+  top: 3rem;
+  right: 2rem;
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-style: italic;
+  text-align: right;
+  max-width: 350px;
+  z-index: 10;
+  font-family: var(--heading-font);
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  display: none; /* Hide by default */
+}
+
+/* Show quote on larger screens */
+@media (min-width: 992px) {
+  .inspirational-quote {
+    display: block;
+  }
+}
+
+/* Media query for small screens */
+@media (max-width: 480px) {
+  .app-title {
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+  }
+  
+  .mode-button {
+    padding: 0.7rem 1.3rem;
+    font-size: 0.9rem;
+  }
+  
+  .spotify-container {
+    max-width: 95%;
+    padding: 0.8rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .connect-spotify-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 350px) {
+  .app-title {
+    font-size: 1.5rem;
+  }
+  
+  .mode-button {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Style for full-width task input */
+.task-input-container {
+  width: 100%;
+  max-width: 90vw;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.task-input {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2rem;
+  color: white;
+  font-size: 1.4rem;
+  text-align: center;
+  backdrop-filter: blur(5px);
+  font-family: var(--heading-font);
+}
+
+.fixed-header {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  z-index: 50;
+  width: auto;
+  max-width: calc(100% - 4rem);
+}
+
+.connect-spotify-button {
+  background: #1DB954; /* Spotify green */
+  color: white;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.connect-spotify-button:hover {
+  background: #1ed760;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+}
+
+/* Timer Edit Mode */
+.time-edit-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.time-edit-input {
+  width: 70px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 500;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.time-edit-input::-webkit-inner-spin-button, 
+.time-edit-input::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.time-edit-input:focus {
+  outline: none;
+}
+
+.time-edit-container span {
+  font-size: 2.5rem;
+  margin: 0 5px;
+}
+
+.time-edit-save {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-left: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+}
+
+.time-edit-save:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Time input styles for settings */
+.time-input-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0.5rem 0 1.2rem;
+}
+
+.time-input {
+  width: 80px;
+  margin: 0;
+  flex: 0 0 auto;
+  padding: 0.8rem;
+}
+
+.time-separator {
+  color: #666;
+  font-size: 0.9rem;
+  width: 60px;
+  text-align: left;
+  margin: 0 0 0 4px;
+}
+
+@media (max-width: 480px) {
+  .time-input-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .time-input {
+    width: 100%;
+  }
+  
+  .time-separator {
+    margin-left: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fixed-header {
+    top: 1rem;
+    left: 1rem;
+    padding-right: 2rem;
+  }
+  
+  .mode-selector {
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
+  }
+  
+  .mode-button {
+    padding: 0.7rem 1.3rem;
+    font-size: 0.9rem;
+    min-width: 80px;
+    flex: 0 1 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .timer-container {
+    margin-top: 5rem;
+    padding: 0.5rem;
+  }
+
+  .timer-controls {
+    margin-top: 2rem;
+  }
+  
+  .control-button {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+  }
+  
+  .reset-button {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
