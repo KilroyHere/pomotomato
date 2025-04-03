@@ -1,0 +1,9 @@
+This is a placeholder. 
+
+You should put a notification sound file named "notification.mp3" in this directory.
+You can find free notification sounds at:
+1. https://notification-sounds.com/
+2. https://mixkit.co/free-sound-effects/notification/
+3. https://www.zapsplat.com/sound-effect-categories/notifications-alerts/
+
+Once you have a suitable notification sound, save it as "notification.mp3" in this directory. 
