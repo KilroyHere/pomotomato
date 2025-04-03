@@ -31,7 +31,6 @@ const Timer: React.FC<TimerProps> = ({
 }) => {
   const [timeLeft, setTimeLeft] = useState(initialMinutes * 60);
   const [isRunning, setIsRunning] = useState(false);
-  const [quote, setQuote] = useState('🍅 tomato to the moon !');
   const [mode, setMode] = useState<TimerMode>(TimerMode.FOCUS);
 
   // Sync with external mode if provided

@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
-import { CogIcon, PencilIcon, PauseIcon, PlayIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
-import { loadAppSettings, saveTimerSettings, TimerSettings, defaultAppSettings } from './utils/storage';
-import { showWorkCompleteNotification, showBreakCompleteNotification, requestNotificationPermission } from './utils/notifications';
+import { CogIcon } from '@heroicons/react/24/solid';
+import { loadAppSettings, saveTimerSettings, TimerSettings } from './utils/storage';
+import { requestNotificationPermission } from './utils/notifications';
 import AnimatedBackground from './components/AnimatedBackground';
 import Timer from './components/Timer';
 import { TimerMode as TimerComponentMode } from './timerTypes';
@@ -39,11 +39,6 @@ function App() {
   const [mode, setMode] = useState<TimerMode>(TimerMode.WORK);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [completedPomodoros, setCompletedPomodoros] = useState<number>(0);
-  const [spotifyPlaying, setSpotifyPlaying] = useState<boolean>(false);
-  const [timeLeft, setTimeLeft] = useState<number>(timerSettings.workDuration);
-  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
-  const [currentTask, setCurrentTask] = useState<string>("Finalize presentation");
-  const [isEditingTask, setIsEditingTask] = useState<boolean>(false);
   const [pomodoroSequence, setPomodoroSequence] = useState<number>(0); // Track position in pomodoro sequence
   const timerRef = useRef<number | null>(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -53,35 +48,6 @@ function App() {
   useEffect(() => {
     requestNotificationPermission();
   }, []);
-
-  // Get the current timer duration based on mode
-  const getCurrentDuration = (): number => {
-    switch (mode) {
-      case TimerMode.WORK:
-        return timerSettings.workDuration;
-      case TimerMode.SHORT_BREAK:
-        return timerSettings.shortBreakDuration;
-      case TimerMode.LONG_BREAK:
-        return timerSettings.longBreakDuration;
-    }
-  };
-
-  // Format time as mm:ss
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  // Reset timer
-  const resetTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    setTimeLeft(getCurrentDuration());
-    // Don't set isActive to false here to allow auto-starting
-  };
 
   // Effect for timer countdown - removed as the Timer component handles this
   useEffect(() => {
@@ -169,8 +135,7 @@ function App() {
     saveTimerSettings(newSettings);
     
     // Update timer duration with the new settings
-    setTimeLeft(getCurrentDuration());
-    setSettingsOpen(false);
+    setShowSettings(false);
   };
 
   // Toggle timer
@@ -185,21 +150,6 @@ function App() {
   const handleReset = () => {
     // Stop the timer
     setIsActive(false);
-    
-    // Reset the time left to the current mode's duration
-    setTimeLeft(getCurrentDuration());
-  };
-
-  // Get the title based on current mode
-  const getTitle = (): string => {
-    switch (mode) {
-      case TimerMode.WORK:
-        return 'FOCUS';
-      case TimerMode.SHORT_BREAK:
-        return 'SHORT';
-      case TimerMode.LONG_BREAK:
-        return 'LONG';
-    }
   };
 
   return (
