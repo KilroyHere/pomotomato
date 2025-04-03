@@ -201,117 +201,147 @@ function App() {
       </div>
       
       {showSettings && (
-        <div className="settings-modal">
-          <h2>Timer Settings</h2>
-          
-          <label className="block mb-2 font-medium">
-            Pomodoro Duration
-            <div className="time-input-container">
-              <input
-                type="number"
-                className="settings-input time-input"
-                defaultValue={Math.floor(timerSettings.workDuration / 60).toString()}
-                min="0"
-                max="60"
-              />
-              <span className="time-separator">minutes</span>
-              <input
-                type="number"
-                className="settings-input time-input"
-                defaultValue={(timerSettings.workDuration % 60).toString()}
-                min="0"
-                max="59"
-              />
-              <span className="time-separator">seconds</span>
+        <>
+          <div className="modal-backdrop" onClick={() => setShowSettings(false)}></div>
+          <div className="settings-modal">
+            <h2>Timer Settings</h2>
+            
+            <div className="settings-section">
+              <label className="block mb-2 font-medium">
+                Pomodoro Duration
+                <div className="time-input-container">
+                  <input
+                    type="number"
+                    className="settings-input time-input"
+                    defaultValue={Math.floor(timerSettings.workDuration / 60).toString()}
+                    min="0"
+                    max="60"
+                    aria-label="Pomodoro minutes"
+                  />
+                  <span className="time-separator">minutes</span>
+                  <input
+                    type="number"
+                    className="settings-input time-input"
+                    defaultValue={(timerSettings.workDuration % 60).toString()}
+                    min="0"
+                    max="59"
+                    aria-label="Pomodoro seconds"
+                  />
+                  <span className="time-separator">seconds</span>
+                </div>
+              </label>
+              
+              <label className="block mb-2 font-medium">
+                Short Break Duration
+                <div className="time-input-container">
+                  <input
+                    type="number"
+                    className="settings-input time-input"
+                    defaultValue={Math.floor(timerSettings.shortBreakDuration / 60).toString()}
+                    min="0"
+                    max="30"
+                    aria-label="Short break minutes"
+                  />
+                  <span className="time-separator">minutes</span>
+                  <input
+                    type="number"
+                    className="settings-input time-input"
+                    defaultValue={(timerSettings.shortBreakDuration % 60).toString()}
+                    min="0"
+                    max="59"
+                    aria-label="Short break seconds"
+                  />
+                  <span className="time-separator">seconds</span>
+                </div>
+              </label>
+              
+              <label className="block mb-2 font-medium">
+                Long Break Duration
+                <div className="time-input-container">
+                  <input
+                    type="number"
+                    className="settings-input time-input"
+                    defaultValue={Math.floor(timerSettings.longBreakDuration / 60).toString()}
+                    min="0"
+                    max="60"
+                    aria-label="Long break minutes"
+                  />
+                  <span className="time-separator">minutes</span>
+                  <input
+                    type="number"
+                    className="settings-input time-input"
+                    defaultValue={(timerSettings.longBreakDuration % 60).toString()}
+                    min="0"
+                    max="59"
+                    aria-label="Long break seconds"
+                  />
+                  <span className="time-separator">seconds</span>
+                </div>
+              </label>
+              
+              <label className="flex items-center mb-4 settings-checkbox-label">
+                <input
+                  type="checkbox"
+                  className="settings-checkbox"
+                  defaultChecked={timerSettings.autoStartBreaks}
+                  aria-label="Auto-start breaks"
+                />
+                <span>Auto-start breaks</span>
+              </label>
+              
+              <label className="flex items-center mb-4 settings-checkbox-label">
+                <input
+                  type="checkbox"
+                  className="settings-checkbox"
+                  defaultChecked={timerSettings.autoStartPomodoros}
+                  aria-label="Auto-start pomodoros"
+                />
+                <span>Auto-start pomodoros</span>
+              </label>
             </div>
-          </label>
-          
-          <label className="block mb-2 font-medium">
-            Short Break Duration
-            <div className="time-input-container">
-              <input
-                type="number"
-                className="settings-input time-input"
-                defaultValue={Math.floor(timerSettings.shortBreakDuration / 60).toString()}
-                min="0"
-                max="30"
-              />
-              <span className="time-separator">minutes</span>
-              <input
-                type="number"
-                className="settings-input time-input"
-                defaultValue={(timerSettings.shortBreakDuration % 60).toString()}
-                min="0"
-                max="59"
-              />
-              <span className="time-separator">seconds</span>
+            
+            <div className="settings-actions">
+              <button 
+                className="cancel-button" 
+                onClick={() => setShowSettings(false)}
+                aria-label="Cancel changes"
+              >
+                Cancel
+              </button>
+              <button 
+                className="save-button" 
+                onClick={() => {
+                  const timeInputs = document.querySelectorAll('.time-input') as NodeListOf<HTMLInputElement>;
+                  
+                  const workMinutes = parseInt(timeInputs[0]?.value || '25');
+                  const workSeconds = parseInt(timeInputs[1]?.value || '0');
+                  const shortBreakMinutes = parseInt(timeInputs[2]?.value || '5');
+                  const shortBreakSeconds = parseInt(timeInputs[3]?.value || '0');
+                  const longBreakMinutes = parseInt(timeInputs[4]?.value || '15');
+                  const longBreakSeconds = parseInt(timeInputs[5]?.value || '0');
+                  
+                  const checkboxInputs = document.querySelectorAll('.settings-checkbox') as NodeListOf<HTMLInputElement>;
+                  
+                  const newSettings = {
+                    ...timerSettings,
+                    workDuration: (workMinutes * 60) + workSeconds,
+                    shortBreakDuration: (shortBreakMinutes * 60) + shortBreakSeconds,
+                    longBreakDuration: (longBreakMinutes * 60) + longBreakSeconds,
+                    autoStartBreaks: checkboxInputs[0]?.checked || false,
+                    autoStartPomodoros: checkboxInputs[1]?.checked || false,
+                    longBreakInterval: timerSettings.longBreakInterval
+                  };
+                  
+                  handleSaveSettings(newSettings);
+                  setShowSettings(false);
+                }}
+                aria-label="Save settings"
+              >
+                Save
+              </button>
             </div>
-          </label>
-          
-          <label className="block mb-2 font-medium">
-            Long Break Duration
-            <div className="time-input-container">
-              <input
-                type="number"
-                className="settings-input time-input"
-                defaultValue={Math.floor(timerSettings.longBreakDuration / 60).toString()}
-                min="0"
-                max="60"
-              />
-              <span className="time-separator">minutes</span>
-              <input
-                type="number"
-                className="settings-input time-input"
-                defaultValue={(timerSettings.longBreakDuration % 60).toString()}
-                min="0"
-                max="59"
-              />
-              <span className="time-separator">seconds</span>
-            </div>
-          </label>
-          
-          <label className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              className="settings-checkbox"
-              defaultChecked={timerSettings.autoStartBreaks}
-            />
-            Auto-start breaks
-          </label>
-          
-          <div className="settings-actions">
-            <button className="cancel-button" onClick={() => setShowSettings(false)}>
-              Cancel
-            </button>
-            <button className="save-button" onClick={() => {
-              const timeInputs = document.querySelectorAll('.time-input') as NodeListOf<HTMLInputElement>;
-              
-              const workMinutes = parseInt(timeInputs[0]?.value || '25');
-              const workSeconds = parseInt(timeInputs[1]?.value || '0');
-              const shortBreakMinutes = parseInt(timeInputs[2]?.value || '5');
-              const shortBreakSeconds = parseInt(timeInputs[3]?.value || '0');
-              const longBreakMinutes = parseInt(timeInputs[4]?.value || '15');
-              const longBreakSeconds = parseInt(timeInputs[5]?.value || '0');
-              
-              const autoStartInput = document.querySelector('.settings-checkbox') as HTMLInputElement;
-              
-              const newSettings = {
-                ...timerSettings,
-                workDuration: (workMinutes * 60) + workSeconds,
-                shortBreakDuration: (shortBreakMinutes * 60) + shortBreakSeconds,
-                longBreakDuration: (longBreakMinutes * 60) + longBreakSeconds,
-                autoStartBreaks: autoStartInput?.checked || false,
-                autoStartPomodoros: timerSettings.autoStartPomodoros,
-                longBreakInterval: timerSettings.longBreakInterval
-              };
-              
-              handleSaveSettings(newSettings);
-              setShowSettings(false);
-            }}>
-              Save
-            </button>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
