@@ -88,6 +88,17 @@ export const getAuthUrl = (): string => {
   console.log('Pathname:', window.location.pathname);
   console.log('Using redirect URI:', REDIRECT_URI);
 
+  // Check if CLIENT_ID is available
+  if (!CLIENT_ID) {
+    console.error('Missing Spotify Client ID. Please add it to your environment variables.');
+    // Add a fallback client ID for GitHub Pages deployment
+    const fallbackClientId = 'de6bae16d5044c9b8350594ab1cb2c29';
+    console.warn('Using fallback client ID for demo purposes only.');
+    
+    const authUrl = `${AUTH_ENDPOINT}?client_id=${fallbackClientId}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPE)}&response_type=${RESPONSE_TYPE}&show_dialog=true`;
+    return authUrl;
+  }
+  
   const authUrl = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPE)}&response_type=${RESPONSE_TYPE}&show_dialog=true`;
   console.log('Generated auth URL:', authUrl);
   return authUrl;

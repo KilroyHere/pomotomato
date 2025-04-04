@@ -27,14 +27,19 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Create env.js with Spotify Client ID
-        run: |
-          echo "window._env_ = {" > ./public/env.js
-          echo "  SPOTIFY_CLIENT_ID: \"${{ secrets.SPOTIFY_CLIENT_ID }}\"" >> ./public/env.js
-          echo "};" >> ./public/env.js
-
       - name: Build
         run: npm run build
+
+      - name: Create env.js with Spotify Client ID in dist
+        run: |
+          # Create env.js in the root of dist folder
+          echo "window._env_ = {" > ./dist/env.js
+          echo "  SPOTIFY_CLIENT_ID: \"${{ secrets.SPOTIFY_CLIENT_ID }}\"" >> ./dist/env.js
+          echo "};" >> ./dist/env.js
+          
+          # Create it in assets folder too (sometimes Vite moves resources here)
+          mkdir -p ./dist/assets
+          cp ./dist/env.js ./dist/assets/env.js
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
