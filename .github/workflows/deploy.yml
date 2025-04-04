@@ -44,6 +44,9 @@ jobs:
           # Also create in assets folder for consistency
           mkdir -p ./dist/assets
           cp ./dist/env.js ./dist/assets/env.js
+          
+          # Debug: Check if files were created
+          echo "✅ env.js files created successfully"
 
       # Setup Pages
       - name: Setup Pages
