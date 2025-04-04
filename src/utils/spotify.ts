@@ -42,7 +42,6 @@ Use the methods above to keep it out of version control.
 */
 
 // Get the current origin, handling GitHub Pages path if needed
-// Updated to be smarter about detecting where we're running
 export const getRedirectURI = (): string => {
   const origin = window.location.origin;
   const path = window.location.pathname;
@@ -111,12 +110,9 @@ export const getAuthUrl = (): string => {
   // Check if CLIENT_ID is available
   if (!CLIENT_ID) {
     console.error('Missing Spotify Client ID. Please add it to your environment variables.');
-    // Add a fallback client ID for GitHub Pages deployment
-    const fallbackClientId = 'de6bae16d5044c9b8350594ab1cb2c29';
-    console.warn('Using fallback client ID for demo purposes only.');
-    
-    const authUrl = `${AUTH_ENDPOINT}?client_id=${fallbackClientId}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPE)}&response_type=${RESPONSE_TYPE}&show_dialog=true`;
-    return authUrl;
+    // Provide instructions instead of a fallback
+    alert('Spotify Client ID is missing. Please run "npm run setup" or add your own client ID.');
+    return '#missing-client-id';
   }
   
   const authUrl = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPE)}&response_type=${RESPONSE_TYPE}&show_dialog=true`;

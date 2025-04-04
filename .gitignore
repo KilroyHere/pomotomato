@@ -27,4 +27,11 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Spotify Client ID configuration
+# SECURITY: These files should never be committed
 public/env.js
+env.js
+**/env.js
+# But keep the template
+!env.template.js

@@ -3,14 +3,13 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/pomotomato/',
+  base: '/pomotomato/', // For GitHub Pages deployment
   plugins: [react()],
-  // Make sure env.js is included in the build
   build: {
-    assetsInlineLimit: 0, // Disable inlining assets
+    assetsInlineLimit: 0, // Keep small assets as separate files
     rollupOptions: {
-      // Preserve env.js as external resource
-      external: ['env.js'],
+      // Make sure env files are treated as external
+      external: ['env.js', 'env.template.js'],
     },
   },
 })

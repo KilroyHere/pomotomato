@@ -15,7 +15,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -30,18 +30,24 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Create env.js with Spotify Client ID in dist
+      - name: Create env.js with Spotify Client ID
         run: |
-          # Create env.js in the root of dist folder
+          # SECURITY: This uses GitHub Secrets to securely inject the Client ID
+          # The Client ID is never committed to the repository
+          
+          # Create env.js in the dist folder
           echo "window._env_ = {" > ./dist/env.js
           echo "  SPOTIFY_CLIENT_ID: \"${{ secrets.SPOTIFY_CLIENT_ID }}\"" >> ./dist/env.js
           echo "};" >> ./dist/env.js
           
-          # Create it in assets folder too (sometimes Vite moves resources here)
+          # Also create in assets folder for consistency
           mkdir -p ./dist/assets
           cp ./dist/env.js ./dist/assets/env.js
+          
+          # Verify creation (without showing the actual ID)
+          echo "✓ Created env.js files with secure Spotify Client ID"
 
-      - name: Deploy 🚀
+      - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist

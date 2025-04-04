@@ -57,7 +57,7 @@ npm run build
 
 ### Spotify Integration Setup
 
-To get the Spotify integration working:
+To set up Spotify integration securely:
 
 1. **Create a Spotify Developer App:**
    - Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/)
@@ -66,26 +66,28 @@ To get the Spotify integration working:
      - For local development: `http://localhost:5173` (or your Vite dev server port)
      - For GitHub Pages: `https://[your-username].github.io/pomotomato/`
 
-2. **Set up the Client ID:**
-
-   **For local development:**
-   - Create or edit `public/env.js` with:
-   ```javascript
-   window._env_ = {
-     SPOTIFY_CLIENT_ID: "your_client_id_here"
-   };
+2. **Set up your Client ID (Interactive):**
+   ```bash
+   npm run setup
    ```
+   This script will prompt you to enter your Spotify Client ID and securely save it to the necessary files.
+
+3. **⚠️ Security Best Practices:**
+   - Never commit any file containing your Spotify Client ID
+   - Make sure `public/env.js` is in your `.gitignore`
+   - For production deployments, always use environment secrets
    
-   **For GitHub Pages deployment:**
+4. **For GitHub Pages deployment:**
    - Add your Spotify Client ID as a secret in your GitHub repository:
-     - Go to your GitHub repository → Settings → Secrets → Actions
-     - Add a new secret with name `SPOTIFY_CLIENT_ID` and your Spotify Client ID as the value
+     - Repository → Settings → Secrets → Actions
+     - Add new secret with name `SPOTIFY_CLIENT_ID`
+   - The GitHub workflow will securely inject the Client ID during build
 
-3. **Content Security Policy Issues:**
-
-If you encounter CSP (Content Security Policy) errors:
-- Make sure your `index.html` has the appropriate CSP meta tag
-- The app is configured to allow connections to Spotify's API endpoints
+5. **Troubleshooting:**
+   - If you get "Missing required parameter; client_id" error:
+     - Run `npm run setup` to enter your Client ID securely
+     - Make sure your redirect URI in Spotify Dashboard exactly matches your app's URL
+     - Check browser console for any loading errors
 
 ## Usage
 
