@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { CogIcon } from '@heroicons/react/24/solid';
 import { loadAppSettings, saveTimerSettings, TimerSettings } from './utils/storage';
-import * as spotifyAPI from './utils/spotify';
 import { 
   requestNotificationPermission, 
   initAudio, 

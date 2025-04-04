@@ -15,8 +15,6 @@ const SpotifyPlayer: React.FC<SpotifyPlayerProps> = ({ isPlaying, setIsPlaying }
   const [isFirstPlay, setIsFirstPlay] = useState<boolean>(true);
   const [isRateLimited, setIsRateLimited] = useState<boolean>(false);
   const [rateLimitCountdown, setRateLimitCountdown] = useState<number>(0);
-  const [isDraggingVolume, setIsDraggingVolume] = useState<boolean>(false);
-  const isFirstRender = useRef(true);
   
   // Only have one playlist - fruit loops
   const fruitLoopsPlaylist = spotifyAPI.FOCUS_PLAYLISTS[0];
