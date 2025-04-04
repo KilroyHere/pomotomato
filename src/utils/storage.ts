@@ -6,6 +6,9 @@ export interface TimerSettings {
   autoStartBreaks: boolean;
   autoStartPomodoros: boolean;
   longBreakInterval: number;
+  spotifyEnabled: boolean;
+  autoPauseOnBreak: boolean;
+  autoPlayOnFocus: boolean;
 }
 
 export interface AppSettings {
@@ -22,7 +25,10 @@ export const defaultTimerSettings: TimerSettings = {
   longBreakDuration: 15 * 60, // 15 minutes in seconds
   autoStartBreaks: false,
   autoStartPomodoros: false,
-  longBreakInterval: 4
+  longBreakInterval: 4,
+  spotifyEnabled: false,
+  autoPauseOnBreak: false,
+  autoPlayOnFocus: false
 };
 
 export const defaultAppSettings: AppSettings = {

@@ -21,6 +21,7 @@ A modern, beautiful Pomodoro timer app with a vibrant animated background and Sp
 - Node.js (v14+)
 - npm or yarn
 - Modern browser with notifications support
+- Spotify Developer account (for Spotify integration)
 
 ### Installation
 
@@ -35,15 +36,54 @@ cd pomotomato
 npm install
 ```
 
-3. Start the development server:
+3. Set up environment variables for Spotify integration:
+```bash
+# Copy the example env file
+cp .env.example .env
+
+# Edit .env file with your Spotify Client ID
+# Get your Client ID at https://developer.spotify.com/dashboard/
+```
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
 
-4. Build for production:
+5. Build for production:
 ```bash
 npm run build
 ```
+
+### Spotify Integration Setup
+
+1. Create a Spotify Developer App:
+   - Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/)
+   - Click "Create an App"
+   - Fill in app name and description
+   - Accept terms and create the app
+
+2. Configure your Spotify App:
+   - In your app settings, add these Redirect URIs:
+     - For local development: `http://localhost:5173` (or your Vite dev server port)
+     - For production: `https://[your-username].github.io/pomotomato/` (if deploying to GitHub Pages)
+   - Save your changes
+
+3. Add your Spotify Client ID to Pomotomato:
+   - For local development:
+     - Add your client ID to the `.env` file:
+       ```
+       VITE_SPOTIFY_CLIENT_ID=your_client_id_here
+       ```
+   - For production:
+     - Copy `public/env.template.js` to `public/env.js`
+     - Add your client ID to `env.js`:
+       ```javascript
+       window._env_ = {
+         SPOTIFY_CLIENT_ID: "your_client_id_here"
+       };
+       ```
+     - Make sure `public/env.js` is in your `.gitignore` to keep your client ID private
 
 ## Usage
 
@@ -70,6 +110,51 @@ Customize timer durations in the settings panel:
 - Long break duration
 - Auto-start breaks
 - Enable/disable notifications
+
+## Deploying to GitHub Pages
+
+To deploy Pomotomato to GitHub Pages with Spotify integration:
+
+1. **Fork or clone the repository to your GitHub account**
+
+2. **Set up GitHub Secret**:
+   - Go to your GitHub repository
+   - Click on "Settings" > "Secrets and variables" > "Actions"
+   - Click "New repository secret"
+   - Name: `SPOTIFY_CLIENT_ID`
+   - Value: Your Spotify client ID from the Spotify Developer Dashboard
+   - Click "Add secret"
+
+3. **Update your deployment workflow** (if using GitHub Actions):
+   - Make sure your workflow generates the env.js file with the secret:
+   ```yaml
+   # Example workflow step
+   - name: Create env.js
+     run: |
+       echo "window._env_ = {" > ./public/env.js
+       echo "  SPOTIFY_CLIENT_ID: \"${{ secrets.SPOTIFY_CLIENT_ID }}\"" >> ./public/env.js
+       echo "};" >> ./public/env.js
+   ```
+
+4. **Enable GitHub Pages**:
+   - Go to your repository's "Settings" > "Pages"
+   - Select "Deploy from a branch" under "Source"
+   - Select the "gh-pages" branch
+   - Click "Save"
+
+5. **Update Spotify Redirect URI**:
+   - Go to your [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+   - Select your application
+   - Click "Edit Settings"
+   - Add your GitHub Pages URL to the Redirect URIs:
+     `https://[your-username].github.io/pomotomato/`
+   - Click "Save"
+
+6. **Trigger Deployment**:
+   - Make a commit to the main branch or
+   - Go to "Actions" tab > "Build and Deploy" workflow > "Run workflow"
+
+After deployment, your app will be available at `https://[your-username].github.io/pomotomato/`
 
 ## License
 

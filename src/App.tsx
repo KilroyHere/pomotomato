@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { CogIcon } from '@heroicons/react/24/solid';
 import { loadAppSettings, saveTimerSettings, TimerSettings } from './utils/storage';
+import * as spotifyAPI from './utils/spotify';
 import { 
   requestNotificationPermission, 
   initAudio, 
@@ -12,6 +13,7 @@ import {
 } from './utils/notifications';
 import AnimatedBackground from './components/AnimatedBackground';
 import Timer from './components/Timer';
+import SpotifyPlayer from './components/SpotifyPlayer';
 import { TimerMode as TimerComponentMode } from './timerTypes';
 
 // Timer modes
@@ -35,11 +37,11 @@ const reverseModeMapping = {
 };
 
 function App() {
-  // Load settings from localStorage with Spotify enabled for testing
-  const initialSettings = {
-    ...loadAppSettings(),
-    spotifyEnabled: true // Enable Spotify for testing
-  };
+  // Load settings from localStorage
+  const initialSettings = loadAppSettings();
+  // Enable Spotify for testing without changing auto behavior defaults
+  initialSettings.spotifyEnabled = true;
+  
   const [timerSettings, setTimerSettings] = useState<TimerSettings>(initialSettings.timerSettings);
   
   // Timer state
@@ -52,6 +54,9 @@ function App() {
   const [shouldAutoStart, setShouldAutoStart] = useState<boolean>(false);
   const [audioInitialized, setAudioInitialized] = useState<boolean>(false);
   const [isNotifying, setIsNotifying] = useState<boolean>(false); // Add flag to prevent duplicate notifications
+
+  // Add Spotify state
+  const [spotifyPlaying, setSpotifyPlaying] = useState<boolean>(false);
 
   // Request notification permission when the app loads
   useEffect(() => {
@@ -80,11 +85,8 @@ function App() {
 
   // Effect to reset timer when mode changes - this is a key function for auto-starting
   useEffect(() => {
-    console.log("Mode changed to:", mode, "shouldAutoStart:", shouldAutoStart);
-    
     // Auto-start if needed - with a slight delay to ensure notification plays first
     if (shouldAutoStart) {
-      console.log("Auto-starting timer...");
       const timer = setTimeout(() => {
         setIsActive(true);
         setShouldAutoStart(false);
@@ -119,56 +121,62 @@ function App() {
 
   // Handle timer completion
   const handleTimerComplete = () => {
-    console.log("Timer completed handler called in App.tsx");
-    
     // Prevent multiple notifications firing at the same time
     if (isNotifying) {
-      console.log("Already showing notification, skipping");
       return;
     }
     
     setIsNotifying(true);
     
-    // Play notification sound and show browser notification
-    if (mode === TimerMode.WORK) {
-      // Show work complete notification
-      showWorkCompleteNotification();
-      
-      const newCompletedPomodoros = completedPomodoros + 1;
-      setCompletedPomodoros(newCompletedPomodoros);
-      
-      // Update pomodoro sequence
-      const newSequence = pomodoroSequence + 1;
-      setPomodoroSequence(newSequence);
-      
-      // Determine which break to take based on sequence
-      const shouldTakeLongBreak = newSequence % 4 === 0;
-      const nextMode = shouldTakeLongBreak ? TimerMode.LONG_BREAK : TimerMode.SHORT_BREAK;
-      
-      console.log("Work completed - setting autoStart to:", timerSettings.autoStartBreaks);
-      
-      // Auto-start break if enabled
-      setShouldAutoStart(timerSettings.autoStartBreaks);
-      
-      // Change mode
-      setMode(nextMode);
-    } else {
-      // Show break complete notification
-      showBreakCompleteNotification();
-      
-      console.log("Break completed - setting autoStart to:", timerSettings.autoStartPomodoros);
-      
-      // Auto-start pomodoro if enabled
-      setShouldAutoStart(timerSettings.autoStartPomodoros);
-      
-      // Change mode
-      setMode(TimerMode.WORK);
-    }
+    // Stop the timer first to prevent issues with mode changes
+    setIsActive(false);
     
-    // Reset notification flag after a delay
+    // Use setTimeout to avoid React error about updating during render
     setTimeout(() => {
-      setIsNotifying(false);
-    }, 1000);
+      // Play notification sound and show browser notification
+      if (mode === TimerMode.WORK) {
+        // Show work complete notification
+        showWorkCompleteNotification();
+        
+        const newCompletedPomodoros = completedPomodoros + 1;
+        setCompletedPomodoros(newCompletedPomodoros);
+        
+        // Update pomodoro sequence
+        const newSequence = pomodoroSequence + 1;
+        setPomodoroSequence(newSequence);
+        
+        // Determine which break to take based on sequence
+        const shouldTakeLongBreak = newSequence % 4 === 0;
+        const nextMode = shouldTakeLongBreak ? TimerMode.LONG_BREAK : TimerMode.SHORT_BREAK;
+        
+        // Auto-start break if enabled
+        setShouldAutoStart(timerSettings.autoStartBreaks);
+        
+        // Change mode
+        setMode(nextMode);
+      } else {
+        // Show break complete notification
+        showBreakCompleteNotification();
+        
+        // Auto-start pomodoro if enabled
+        setShouldAutoStart(timerSettings.autoStartPomodoros);
+        
+        // Change mode
+        setMode(TimerMode.WORK);
+      }
+      
+      // If auto-start is enabled, set isActive back to true after a delay
+      if (shouldAutoStart) {
+        setTimeout(() => {
+          setIsActive(true);
+        }, 500); // Increased to ensure mode change completes first
+      }
+      
+      // Reset notification flag after all state updates
+      setTimeout(() => {
+        setIsNotifying(false);
+      }, 1000);
+    }, 0);
   };
 
   // Custom mode change handler to preserve pomodoro sequence
@@ -189,8 +197,6 @@ function App() {
 
   // Toggle timer
   const toggleTimer = () => {
-    console.log("Toggling timer from App.tsx, current state:", isActive);
-    
     // Initialize audio on user interaction
     initAudio().then(initialized => {
       if (initialized) {
@@ -206,6 +212,16 @@ function App() {
   const handleReset = () => {
     // Stop the timer
     setIsActive(false);
+    
+    // In case this is called during initialization before component mounts
+    if (mode === undefined) {
+      return;
+    }
+    
+    // Force a re-render of the Timer component by changing currentMode
+    // This ensures the timer is properly reset
+    const currentMode = modeMapping[mode];
+    setMode(reverseModeMapping[currentMode]);
   };
 
   return (
@@ -240,24 +256,10 @@ function App() {
         currentMode={modeMapping[mode]}
       />
       
-      <div className="spotify-container">
-        <div className="h-8 w-8 flex items-center justify-center bg-black bg-opacity-20 rounded-full mr-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1.5-4.5l6-4.5-6-4.5v9z" />
-          </svg>
-        </div>
-        <div className="flex-1">
-          <div className="text-sm font-medium">
-            Connect to Spotify
-          </div>
-          <div className="text-xs opacity-70">
-            Sign in to enjoy our playlists in full
-          </div>
-        </div>
-        <button className="connect-spotify-button">
-          Connect Spotify
-        </button>
-      </div>
+      <SpotifyPlayer 
+        isPlaying={spotifyPlaying} 
+        setIsPlaying={setSpotifyPlaying} 
+      />
       
       {showSettings && (
         <>
@@ -376,9 +378,27 @@ function App() {
                   {audioInitialized ? 'Sound Enabled ✓' : 'Test Notification Sound'}
                 </button>
               </div>
+              
+              <h3 className="settings-subheading">Spotify Integration</h3>
+              <div className="spotify-settings-section">
+                <p className="settings-description">
+                  Connect your Spotify account to enjoy focus music while you work.
+                  Control playback manually using the Spotify player controls below the timer.
+                </p>
+                                
+                <button 
+                  className="spotify-settings-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open('https://www.spotify.com/account/apps/', '_blank');
+                  }}
+                >
+                  Manage Spotify App Permissions
+                </button>
+              </div>
             </div>
             
-            <div className="settings-actions">
+            <div className="settings-actions center-actions">
               <button 
                 className="cancel-button" 
                 onClick={() => setShowSettings(false)}
@@ -407,7 +427,9 @@ function App() {
                     longBreakDuration: (longBreakMinutes * 60) + longBreakSeconds,
                     autoStartBreaks: checkboxInputs[0]?.checked || false,
                     autoStartPomodoros: checkboxInputs[1]?.checked || false,
-                    longBreakInterval: timerSettings.longBreakInterval
+                    longBreakInterval: timerSettings.longBreakInterval,
+                    // Spotify settings
+                    spotifyEnabled: true // Always enable Spotify when available
                   };
                   
                   handleSaveSettings(newSettings);
