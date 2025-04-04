@@ -10,10 +10,15 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  deployments: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # Use the github-pages environment for proper deployment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -47,10 +52,17 @@ jobs:
           # Verify creation (without showing the actual ID)
           echo "✓ Created env.js files with secure Spotify Client ID"
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+      # Setup Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+        
+      # Upload artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
         with:
-          folder: dist
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          clean: true 
+          path: './dist'
+          
+      # Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2 
