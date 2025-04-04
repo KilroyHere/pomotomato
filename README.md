@@ -119,8 +119,6 @@ Customize timer durations in the settings panel:
 
 To deploy Pomotomato to GitHub Pages:
 
-### For Public Repositories:
-
 1. **Fork or clone the repository to your GitHub account**
 
 2. **Set up GitHub Secret**:
@@ -135,36 +133,17 @@ To deploy Pomotomato to GitHub Pages:
    - Go to your repository's "Settings" > "Pages"
    - Select "GitHub Actions" under "Build and deployment"
 
-### For Private Repositories:
-
-1. **Update GitHub Pages settings**:
-   - Go to repository "Settings" > "Pages"
-   - Under "Build and deployment", select "GitHub Actions"
-   - Make sure "GitHub Actions" is selected (not "Deploy from a branch")
-
-2. **Create a GitHub Personal Access Token**:
-   - Go to your GitHub account settings
-   - Select "Developer settings" > "Personal access tokens" > "Tokens (classic)"
-   - Generate a new token with `repo` and `workflow` scopes
-   - Copy the token value
-
-3. **Set up GitHub Secrets**:
-   - Go to your repository "Settings" > "Secrets and variables" > "Actions"
-   - Add two secrets:
-     - `SPOTIFY_CLIENT_ID`: Your Spotify client ID
-     - `GH_PAGES_TOKEN`: Your personal access token created above
-
 4. **Push to main branch** to trigger the deployment workflow
 
-### Updating Spotify Redirect URI:
+5. **Update Spotify Redirect URI**:
+   - Go to your [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+   - Select your application
+   - Click "Edit Settings"
+   - Add your GitHub Pages URL to the Redirect URIs:
+     `https://[your-username].github.io/pomotomato/`
+   - Click "Save"
 
-After deployment, update your Spotify app settings:
-- Go to your [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-- Select your application
-- Click "Edit Settings"
-- Add your GitHub Pages URL to the Redirect URIs:
-  `https://[your-username].github.io/pomotomato/`
-- Click "Save"
+After deployment, your app will be available at `https://[your-username].github.io/pomotomato/`
 
 ## License
 

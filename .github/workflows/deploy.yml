@@ -10,21 +10,20 @@ permissions:
   contents: write
   pages: write
   id-token: write
-  deployments: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    # Use the github-pages environment for proper deployment
+    # Set up environment for GitHub Pages
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
@@ -37,9 +36,6 @@ jobs:
 
       - name: Create env.js with Spotify Client ID
         run: |
-          # SECURITY: This uses GitHub Secrets to securely inject the Client ID
-          # The Client ID is never committed to the repository
-          
           # Create env.js in the dist folder
           echo "window._env_ = {" > ./dist/env.js
           echo "  SPOTIFY_CLIENT_ID: \"${{ secrets.SPOTIFY_CLIENT_ID }}\"" >> ./dist/env.js
@@ -48,21 +44,18 @@ jobs:
           # Also create in assets folder for consistency
           mkdir -p ./dist/assets
           cp ./dist/env.js ./dist/assets/env.js
-          
-          # Verify creation (without showing the actual ID)
-          echo "✓ Created env.js files with secure Spotify Client ID"
 
       # Setup Pages
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v4
         
-      # Upload artifact
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+      # Upload artifact for Pages
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
           
       # Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2 
+        uses: actions/deploy-pages@v4 
