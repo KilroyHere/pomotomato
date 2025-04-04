@@ -45,20 +45,31 @@ Use the methods above to keep it out of version control.
 export const getRedirectURI = (): string => {
   const origin = window.location.origin;
   const path = window.location.pathname;
+  const hostname = window.location.hostname;
   
-  console.log('Current origin:', origin);
-  console.log('Current pathname:', path);
+  console.log('Spotify auth - current origin:', origin);
+  console.log('Spotify auth - current pathname:', path);
+  console.log('Spotify auth - current hostname:', hostname);
   
-  // For GitHub Pages (pathname includes /pomotomato/)
-  if (path.includes('/pomotomato/')) {
-    const redirectUri = `${origin}/pomotomato/`;
-    console.log('Using GitHub Pages redirect URI:', redirectUri);
+  // For GitHub Pages (pathname includes /pomotomato/ or hostname is github.io)
+  if (path.includes('/pomotomato/') || hostname.includes('github.io')) {
+    // Get the username part from the hostname if it's github.io
+    let redirectUri = '';
+    
+    if (hostname.includes('github.io')) {
+      redirectUri = `${origin}/pomotomato/`;
+    } else {
+      redirectUri = `${origin}${path.includes('/pomotomato/') ? '/pomotomato/' : '/'}`;
+    }
+    
+    console.log('Spotify auth - using GitHub Pages redirect URI:', redirectUri);
     return redirectUri;
   }
   
   // For localhost development
-  console.log('Using local redirect URI:', origin + '/');
-  return origin + '/';
+  const localRedirectUri = origin + '/';
+  console.log('Spotify auth - using local redirect URI:', localRedirectUri);
+  return localRedirectUri;
 };
 
 const REDIRECT_URI = getRedirectURI();
@@ -103,20 +114,34 @@ export interface SpotifyPlaylist {
 // Spotify Authentication
 export const getAuthUrl = (): string => {
   // Log the current origin and redirect URI for debugging
-  console.log('Current origin:', window.location.origin);
-  console.log('Pathname:', window.location.pathname);
-  console.log('Using redirect URI:', REDIRECT_URI);
+  const redirectUri = REDIRECT_URI;
+  console.log('Spotify auth - generating URL with:');
+  console.log('- Client ID available:', CLIENT_ID ? 'Yes' : 'No');
+  console.log('- Redirect URI:', redirectUri);
+  console.log('- Using window._env_:', window._env_ ? 'Yes' : 'No');
+  
+  if (window._env_) {
+    console.log('- window._env_.SPOTIFY_CLIENT_ID exists:', window._env_.SPOTIFY_CLIENT_ID ? 'Yes' : 'No');
+  }
 
   // Check if CLIENT_ID is available
   if (!CLIENT_ID) {
     console.error('Missing Spotify Client ID. Please add it to your environment variables.');
+    
+    // Check for specific issues
+    if (!window._env_) {
+      console.error('window._env_ is not defined. env.js might not be loaded properly.');
+    } else if (!window._env_.SPOTIFY_CLIENT_ID) {
+      console.error('window._env_.SPOTIFY_CLIENT_ID is not defined in env.js');
+    }
+    
     // Provide instructions instead of a fallback
     alert('Spotify Client ID is missing. Please run "npm run setup" or add your own client ID.');
     return '#missing-client-id';
   }
   
-  const authUrl = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPE)}&response_type=${RESPONSE_TYPE}&show_dialog=true`;
-  console.log('Generated auth URL:', authUrl);
+  const authUrl = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(SCOPE)}&response_type=${RESPONSE_TYPE}&show_dialog=true`;
+  console.log('Generated auth URL (partial):', authUrl.substring(0, 100) + '...');
   return authUrl;
 };
 

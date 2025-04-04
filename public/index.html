@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A beautiful Pomodoro timer with Spotify integration" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src 'self' https://api.spotify.com https://accounts.spotify.com; img-src 'self' data: https://i.scdn.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+    <!-- Environment variables for Spotify integration - load BEFORE all other scripts -->
+    <script src="env.js"></script>
     <title>Pomotomato</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,8 +15,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Environment variables for Spotify integration -->
-    <script src="env.js"></script>
     <script type="module" src="./src/main.tsx"></script>
   </body>
 </html> 
