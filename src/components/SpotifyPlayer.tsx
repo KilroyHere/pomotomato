@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { SpeakerWaveIcon, SpeakerXMarkIcon, PauseIcon, PlayIcon, ForwardIcon, ClockIcon } from '@heroicons/react/24/solid';
 import * as spotifyAPI from '../utils/spotify';
 
