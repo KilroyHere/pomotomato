@@ -57,33 +57,35 @@ npm run build
 
 ### Spotify Integration Setup
 
-1. Create a Spotify Developer App:
+To get the Spotify integration working:
+
+1. **Create a Spotify Developer App:**
    - Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/)
-   - Click "Create an App"
-   - Fill in app name and description
-   - Accept terms and create the app
-
-2. Configure your Spotify App:
-   - In your app settings, add these Redirect URIs:
+   - Create a new app
+   - Set these Redirect URIs in your Spotify app settings:
      - For local development: `http://localhost:5173` (or your Vite dev server port)
-     - For production: `https://[your-username].github.io/pomotomato/` (if deploying to GitHub Pages)
-   - Save your changes
+     - For GitHub Pages: `https://[your-username].github.io/pomotomato/`
 
-3. Add your Spotify Client ID to Pomotomato:
-   - For local development:
-     - Add your client ID to the `.env` file:
-       ```
-       VITE_SPOTIFY_CLIENT_ID=your_client_id_here
-       ```
-   - For production:
-     - Copy `public/env.template.js` to `public/env.js`
-     - Add your client ID to `env.js`:
-       ```javascript
-       window._env_ = {
-         SPOTIFY_CLIENT_ID: "your_client_id_here"
-       };
-       ```
-     - Make sure `public/env.js` is in your `.gitignore` to keep your client ID private
+2. **Set up the Client ID:**
+
+   **For local development:**
+   - Create or edit `public/env.js` with:
+   ```javascript
+   window._env_ = {
+     SPOTIFY_CLIENT_ID: "your_client_id_here"
+   };
+   ```
+   
+   **For GitHub Pages deployment:**
+   - Add your Spotify Client ID as a secret in your GitHub repository:
+     - Go to your GitHub repository → Settings → Secrets → Actions
+     - Add a new secret with name `SPOTIFY_CLIENT_ID` and your Spotify Client ID as the value
+
+3. **Content Security Policy Issues:**
+
+If you encounter CSP (Content Security Policy) errors:
+- Make sure your `index.html` has the appropriate CSP meta tag
+- The app is configured to allow connections to Spotify's API endpoints
 
 ## Usage
 

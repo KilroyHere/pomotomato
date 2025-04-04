@@ -42,7 +42,27 @@ Use the methods above to keep it out of version control.
 */
 
 // Get the current origin, handling GitHub Pages path if needed
-const REDIRECT_URI = window.location.origin + (window.location.pathname.includes('/pomotomato') ? '/pomotomato/' : '/');
+// Updated to be smarter about detecting where we're running
+export const getRedirectURI = (): string => {
+  const origin = window.location.origin;
+  const path = window.location.pathname;
+  
+  console.log('Current origin:', origin);
+  console.log('Current pathname:', path);
+  
+  // For GitHub Pages (pathname includes /pomotomato/)
+  if (path.includes('/pomotomato/')) {
+    const redirectUri = `${origin}/pomotomato/`;
+    console.log('Using GitHub Pages redirect URI:', redirectUri);
+    return redirectUri;
+  }
+  
+  // For localhost development
+  console.log('Using local redirect URI:', origin + '/');
+  return origin + '/';
+};
+
+const REDIRECT_URI = getRedirectURI();
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 const SCOPE = 'streaming user-read-email user-read-private user-library-read user-library-modify user-read-playback-state user-modify-playback-state';
